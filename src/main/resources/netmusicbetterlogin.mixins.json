@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.img.netmusicbetterlogin.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "netmusicbetterlogin.refmap.json",
+  "plugin": "com.github.img.netmusicbetterlogin.util.MixinPlugin",
+  "mixins": [
+    "BlockMusicPlayerMixin",
+    "MusicPlayerBackpackContainerMixin",
+    "MusicPlayerBackpackDataMixin",
+    "NetMusicDiscHandlerMixin",
+    "PlaySoundFunctionMixin",
+    "TileEntityMusicPlayerMixin",
+    "accessor.MaidMusicToClientMessageAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
