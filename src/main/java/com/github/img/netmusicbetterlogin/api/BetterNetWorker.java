@@ -2,39 +2,26 @@ package com.github.img.netmusicbetterlogin.api;
 
 import com.github.tartaricacid.netmusic.api.NetWorker;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.http.HttpRequest;
 import java.util.*;
 
 public class BetterNetWorker {
     public static HttpResponse get(String url, Map<String, String> requestPropertyData) throws IOException {
-        StringBuilder result = new StringBuilder();
-        URL urlConnect = new URL(url);
-        URLConnection connection = urlConnect.openConnection(NetWorker.getProxyFromConfig());
-        Collection<String> keys = requestPropertyData.keySet();
-        Iterator<String> var6 = keys.iterator();
+        HttpRequest request = createRequestBuilder(url, requestPropertyData)
+                .GET()
+                .build();
+        java.net.http.HttpResponse<String> response = NetWorker.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
-        String line;
-        while (var6.hasNext()) {
-            line = var6.next();
-            String val = requestPropertyData.get(line);
-            connection.setRequestProperty(line, val);
-        }
+        return new HttpResponse(response.body(), response.headers().map());
+    }
 
-        connection.setConnectTimeout(12000);
-        connection.setDoInput(true);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-
-        while ((line = bufferedReader.readLine()) != null) {
-            result.append(line);
-        }
-
-        bufferedReader.close();
-        return new HttpResponse(result.toString(), connection.getHeaderFields());
+    private static HttpRequest.Builder createRequestBuilder(String url, Map<String, String> requestPropertyData) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(url));
+        Objects.requireNonNull(builder);
+        requestPropertyData.forEach(builder::header);
+        return builder;
     }
 
     public static class HttpResponse {

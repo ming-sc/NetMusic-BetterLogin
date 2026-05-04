@@ -9,9 +9,6 @@ import java.util.Map;
 
 public class NeteaseApi {
     private final Map<String, String> requestPropertyData = new HashMap<>() {{
-        put("Host", "music.163.com");
-        put("Origin", "https://music.163.com");
-        put("Referer", "https://music.163.com");
         put("Content-Type", "application/x-www-form-urlencoded");
         put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36 Chrome/91.0.4472.164 NeteaseMusicDesktop/3.1.6");
     }};

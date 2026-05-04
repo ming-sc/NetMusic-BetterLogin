@@ -16,7 +16,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
     private static final Map<String, String> MIXIN_CLASS_TO_MOD_ID = Map.of(
             MIXIN_PACKAGE + "MusicPlayerBackpackContainerMixin", TLM_MOD_ID,
             MIXIN_PACKAGE + "MusicPlayerBackpackDataMixin", TLM_MOD_ID,
-            MIXIN_PACKAGE + "PlaySoundFunctionMixin", TLM_MOD_ID,
             MIXIN_PACKAGE + "accessor.MaidMusicToClientMessageAccessor", TLM_MOD_ID,
             MIXIN_PACKAGE + "NetMusicDiscHandlerMixin", S_CORE_MOD_ID
     );
