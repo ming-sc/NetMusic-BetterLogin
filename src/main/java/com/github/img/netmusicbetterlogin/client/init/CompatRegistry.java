@@ -15,7 +15,7 @@ public class CompatRegistry {
     public static class clothCompat {
         @SubscribeEvent
         public static void onEnqueue(final InterModEnqueueEvent event) {
-            event.enqueueWork(() -> checkModLoad(CLOTH_CONFIG, () -> MenuIntegration.registerModsPage()));
+            event.enqueueWork(() -> checkModLoad(CLOTH_CONFIG, MenuIntegration::registerModsPage));
         }
     }
 

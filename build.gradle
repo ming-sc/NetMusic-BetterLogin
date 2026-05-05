@@ -3,9 +3,6 @@ buildscript {
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         mavenCentral()
     }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
 }
 
 plugins {
@@ -15,8 +12,6 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'com.gradleup.shadow' version '8.3.1'
 }
-
-apply plugin: 'org.spongepowered.mixin'
 
 group = mod_group_id
 version = "${mod_version}-forge-mc${minecraft_version}"
@@ -89,12 +84,6 @@ minecraft {
     }
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-
-    config "${mod_id}.mixins.json"
-}
-
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
@@ -121,13 +110,12 @@ configurations {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // Cloth Config
     implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.106")
 
     // 网络音乐机
-    implementation fg.deobf('maven.modrinth:net-music:1.5.0-forge+mc1.20.1')
+    implementation fg.deobf('maven.modrinth:net-music:1.5.1-forge+mc1.20.1')
 
     // 车万女仆
     implementation fg.deobf('maven.modrinth:touhou-little-maid:1.5.2-forge+mc1.20.1')

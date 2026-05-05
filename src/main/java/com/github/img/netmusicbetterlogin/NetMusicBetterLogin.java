@@ -1,8 +1,9 @@
 package com.github.img.netmusicbetterlogin;
 
 import com.github.img.netmusicbetterlogin.api.NeteaseApi;
+import com.github.img.netmusicbetterlogin.compat.netmusic.NeteaseVIPResolver;
 import com.github.img.netmusicbetterlogin.config.GeneralConfig;
-import com.github.img.netmusicbetterlogin.network.NetworkHandler;
+import com.github.tartaricacid.netmusic.api.resolver.MusicPlayResolverManager;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -23,9 +24,10 @@ public class NetMusicBetterLogin {
     public NetMusicBetterLogin() {
         NETEASE_API = new NeteaseApi();
 
-        NetworkHandler.init();
         ModContainer container = ModLoadingContext.get().getContainer();
         CONFIG = new ModConfig(ModConfig.Type.COMMON, GeneralConfig.init(), container);
         container.addConfig(CONFIG);
+
+        MusicPlayResolverManager.registerResolver(new NeteaseVIPResolver());
     }
 }
