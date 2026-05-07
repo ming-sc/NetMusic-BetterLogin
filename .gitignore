@@ -1,0 +1,7 @@
+.idea
+src/test
+build
+.gradle
+logs
+run
+run-data

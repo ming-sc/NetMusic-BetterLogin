@@ -1,0 +1,70 @@
+package com.github.img.netmusicbetterlogin.compat.netmusic;
+
+import com.github.img.netmusicbetterlogin.NetMusicBetterLogin;
+import com.github.img.netmusicbetterlogin.api.pojo.NetEaseMusicPlayInfo;
+import com.github.img.netmusicbetterlogin.config.GeneralConfig;
+import com.github.tartaricacid.netmusic.api.resolver.IAsyncSongUrlResolver;
+import com.github.tartaricacid.netmusic.item.ItemMusicCD;
+import com.google.gson.Gson;
+import net.minecraft.Util;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.github.tartaricacid.netmusic.client.audio.MusicPlayManager.MUSIC_163_URL;
+
+public class NeteaseVIPResolver implements IAsyncSongUrlResolver {
+    private static final Gson GSON = new Gson();
+    private static final Pattern PATTERN = Pattern.compile("^.*?\\?id=(\\d+)\\.mp3$");
+
+    @Override
+    public boolean canResolve(ItemMusicCD.SongInfo songInfo) {
+        String songUrl = songInfo.songUrl;
+        return songUrl.startsWith(MUSIC_163_URL) && PATTERN.matcher(songUrl).find();
+    }
+
+    @Override
+    public CompletableFuture<ItemMusicCD.SongInfo> resolve(ItemMusicCD.SongInfo songInfo) {
+        return getRealSongInfo(songInfo);
+    }
+
+    @Override
+    public int getPriority() {
+        return 10;
+    }
+
+    public static CompletableFuture<ItemMusicCD.SongInfo> getRealSongInfo(ItemMusicCD.SongInfo songInfo) {
+        return CompletableFuture.supplyAsync(() -> {
+            String songUrl = songInfo.songUrl;
+            if (!songUrl.startsWith(MUSIC_163_URL)) {
+                return songInfo;
+            }
+            Matcher matcher = PATTERN.matcher(songUrl);
+            if (!matcher.find()) {
+                return songInfo;
+            }
+            long musicId = Long.parseLong(matcher.group(1));
+            try {
+                String response = NetMusicBetterLogin.NETEASE_API.getPlayInfo(musicId, GeneralConfig.LEVEL.get());
+                NetEaseMusicPlayInfo playInfo = GSON.fromJson(response, NetEaseMusicPlayInfo.class);
+                Optional<NetEaseMusicPlayInfo.PlayInfo> info = playInfo.getPlayInfo();
+                Integer code = info.map(NetEaseMusicPlayInfo.PlayInfo::getCode)
+                        .orElseThrow(() -> new RuntimeException("code is null"));
+                if (code != 200) {
+                    throw new RuntimeException(String.format("Response code is %d, Please check vip status and song availability.", code));
+                }
+                String url = info.map(NetEaseMusicPlayInfo.PlayInfo::getUrl)
+                        .orElseThrow(() -> new RuntimeException("url is null"));
+                int time = info.map(NetEaseMusicPlayInfo.PlayInfo::getTime)
+                        .orElseThrow(() -> new RuntimeException("time is null")) / 1000;
+                songInfo.songUrl = url;
+                songInfo.songTime = time;
+            } catch (Throwable e) {
+                NetMusicBetterLogin.LOGGER.error("Failed to get play info for music id: {}", musicId, e);
+            }
+            return songInfo;
+        }, Util.backgroundExecutor());
+    }
+}
