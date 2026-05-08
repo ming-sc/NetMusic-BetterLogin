@@ -15,7 +15,8 @@ public class CompatRegistry {
     public static class clothCompat {
         @SubscribeEvent
         public static void onEnqueue(final InterModEnqueueEvent event) {
-            event.enqueueWork(() -> checkModLoad(CLOTH_CONFIG, MenuIntegration::registerModsPage));
+            // 下面这个 lambda 别化简成方法引用, 会导致 MenuIntegration 类加载, 进而导致 ClothConfig 加载
+            event.enqueueWork(() -> checkModLoad(CLOTH_CONFIG, () -> MenuIntegration.registerModsPage()));
         }
     }
 
