@@ -26,6 +26,9 @@ public class NetEaseMusicPlayInfo {
         @SerializedName("code")
         private int code;
 
+        @SerializedName("podcastCtrp")
+        private String podcastCtrp;
+
         public long getId() {
             return id;
         }
@@ -40,6 +43,10 @@ public class NetEaseMusicPlayInfo {
 
         public int getCode() {
             return code;
+        }
+
+        public String getPodcastCtrp() {
+            return podcastCtrp;
         }
     }
 
