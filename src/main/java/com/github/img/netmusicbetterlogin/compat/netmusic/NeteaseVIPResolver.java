@@ -59,8 +59,14 @@ public class NeteaseVIPResolver implements IAsyncSongUrlResolver {
                         .orElseThrow(() -> new RuntimeException("url is null"));
                 int time = info.map(NetEaseMusicPlayInfo.PlayInfo::getTime)
                         .orElseThrow(() -> new RuntimeException("time is null")) / 1000;
+                // 如果是播客声音, 接口返回的时间会是 0
+                // 这里用 podcastCtrp 字段来判断是否为播客, 如果是播客且时间为 0 则使用原来的时间
+                int finalTime = info.map(NetEaseMusicPlayInfo.PlayInfo::getPodcastCtrp)
+                        // 双重保险, 只在时间为 0 时才使用原来的时间
+                        .map(c -> time == 0 ? songInfo.songTime : time)
+                        .orElse(time);
                 songInfo.songUrl = url;
-                songInfo.songTime = time;
+                songInfo.songTime = finalTime;
             } catch (Throwable e) {
                 NetMusicBetterLogin.LOGGER.error("Failed to get play info for music id: {}", musicId, e);
             }
